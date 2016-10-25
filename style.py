@@ -47,6 +47,7 @@ from skimage import img_as_ubyte
 from skimage.transform import rescale
 
 import os.path as osp
+from timer import Timer
 
 # logging
 LOG_FORMAT = "%(filename)s:%(funcName)s:%(asctime)s.%(msecs)03d -- %(message)s"
@@ -435,6 +436,8 @@ class StyleTransfer(object):
         print 'init=', init
         print 'verbose=', verbose
 
+        timer = Timer()
+        timer.tic()
         # assume that convnet input is square
         orig_dim = min(self.net.blobs["data"].shape[2:])
 
@@ -498,6 +501,8 @@ class StyleTransfer(object):
             self.pbar.finish()
         else:
             res = minimize(style_optfn, img0.flatten(), **minfn_args).nit
+        timer.toc()
+        print ('StyleTransfer.transfer_style() took {:.3f}s').format(timer.total_time)
 
         return res
 

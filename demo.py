@@ -21,6 +21,7 @@ import numpy as np
 import os.path
 from skimage import img_as_ubyte
 from scipy.misc import imsave
+from timer import Timer
 ##
 
 
@@ -126,7 +127,12 @@ def main(args):
     # perform style transfer
     img_style = caffe.io.load_image(args.style_img)
     img_content = caffe.io.load_image(args.content_img)
+    
+    timer = Timer()
+    timer.tic()
     result = st_api(img_style, img_content, np.float(args.ratio), args.init)
+    timer.toc()
+    print ('Style Transfer API took {:.3f}s').format(timer.total_time)
 
     # output path
     if args.output is not None:
