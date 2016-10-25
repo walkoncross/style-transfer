@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+import style
+
 model = 'googlenet'
 #style = './images/style/mosaic-s.jpg'
 #style = './images/style/starry_night.jpg'
@@ -14,4 +17,5 @@ iters = 100
 
 input_args = '-m ' + model + ' -r ' + ratio + ' -s ' + style + ' -c ' + img + ' -i ' + init + ' -n ' + str(iters)
 
-runfile('C:/zyf/github/style-transfer/style.py', args=input_args, wdir='C:/zyf/github/style-transfer')
+#runfile('C:/zyf/github/style-transfer/style.py', args=input_args, wdir='C:/zyf/github/style-transfer')
+style.main(input_args.split())

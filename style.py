@@ -433,7 +433,7 @@ class StyleTransfer(object):
         print 'length=', length
         print 'ratio=', ratio
         print 'n_iter=', n_iter
-        print 'init=', init
+        print 'init=', type(init) if type(init) is not str else init
         print 'verbose=', verbose
 
         timer = Timer()
@@ -441,6 +441,9 @@ class StyleTransfer(object):
         # assume that convnet input is square
         orig_dim = min(self.net.blobs["data"].shape[2:])
 
+        if length > max(img_content.shape[:2]):
+            length = max(img_content.shape[:2])
+            
         # rescale the images
         scale = max(length / float(max(img_style.shape[:2])),
                     orig_dim / float(min(img_style.shape[:2])))
@@ -510,7 +513,9 @@ def main(args):
     """
         Entry point.
     """
-
+    args = parser.parse_args()
+    print args
+    
     # logging
     level = logging.INFO if args.verbose else logging.DEBUG
     logging.basicConfig(format=LOG_FORMAT, datefmt="%H:%M:%S", level=level)
@@ -570,7 +575,5 @@ def main(args):
 
 
 if __name__ == "__main__":
-    args = parser.parse_args()
-    print args
-    main(args)
+    main(sys.argv)
 

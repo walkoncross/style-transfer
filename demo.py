@@ -22,6 +22,7 @@ import os.path
 from skimage import img_as_ubyte
 from scipy.misc import imsave
 from timer import Timer
+import sys
 ##
 
 
@@ -68,7 +69,7 @@ def init(model_name, n_workers=1):
 
     # assign a lock to each worker
     for i in range(n_workers):
-        worker = StyleTransfer(model_name, use_pbar=True)
+        worker = StyleTransfer(model_name, use_pbar=False)
         workers.update({Lock(): worker})
 
 def st_api(img_style, img_content, ratio=1e4, init='content', callback=None):
@@ -111,6 +112,8 @@ def main(args):
     """
         Entry point.
     """
+    args = parser.parse_args(args)
+    print args
 
     if args.gpu_id == -1:
         caffe.set_mode_cpu()
@@ -163,6 +166,4 @@ def main(args):
 
 
 if __name__ == "__main__":
-    args = parser.parse_args()
-    print(args)
-    main(args)
+    main(sys.argv)
