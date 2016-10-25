@@ -46,7 +46,6 @@ from scipy.optimize import minimize
 from skimage import img_as_ubyte
 from skimage.transform import rescale
 
-import os.path as osp
 
 # logging
 LOG_FORMAT = "%(filename)s:%(funcName)s:%(asctime)s.%(msecs)03d -- %(message)s"
@@ -82,14 +81,7 @@ CAFFENET_WEIGHTS = {"content": {"conv4": 1},
                               "conv3": 0.2,
                               "conv4": 0.2,
                               "conv5": 0.2}}
-#CAFFENET_WEIGHTS = {"content": {"conv4": 1},
-#                    "style": {"conv1": 0.25,
-#                              "conv2": 0.25,
-#                              "conv3": 0.25,
-#                              "conv4": 0.25}}
-#CAFFENET_WEIGHTS = {"content": {"conv4": 1},
-#                    "style": {"conv1": 0.5,
-#                              "conv2": 0.5}}                               
+
 # argparse
 parser = argparse.ArgumentParser(description="Transfer the style of one image to another.",
                                  usage="style.py -s <style_image> -c <content_image>")
@@ -136,24 +128,11 @@ def _compute_reprs(net_in, net, layers_style, layers_content, gram_scale=1):
     """
         Computes representation matrices for an image.
     """
-    #added by zhaoyafei 
-    end_layer = None
-    if len(layers_content)<1:
-        end_layer = layers_style[-1]
-    
-    else:
-        if len(layers_style)<1:
-             end_layer = layers_content[-1]
-        else:
-            end_layer = layers_content[-1] if layers_content[-1]>layers_style[-1] else layers_style[-1]
-    
-    #print 'In _compute_reprs: end_layer = ', end_layer
-    
+
     # input data and forward pass
     (repr_s, repr_c) = ({}, {})
     net.blobs["data"].data[0] = net_in
-    #net.forward()
-    net.forward(end=end_layer)
+    net.forward()
 
     # loop through combined set of layers
     for layer in set(layers_style)|set(layers_content):
@@ -527,8 +506,8 @@ def main(args):
     
     # artistic style class
     use_pbar = not args.verbose
-#    print args.model
-#    print type(args.model)
+    print args.model
+    print type(args.model)
     st = StyleTransfer(args.model.lower(), use_pbar=use_pbar)
     logging.info("Successfully loaded model {0}.".format(args.model))
 
@@ -549,15 +528,6 @@ def main(args):
                         os.path.splitext(os.path.split(args.style_img)[1])[0], 
                         args.model, args.init, args.ratio, args.num_iters)
         out_path = "outputs/{0}-{1}-{2}-{3}-{4}-{5}.jpg".format(*out_path_fmt)
-        
-        if osp.exists(out_path):
-            inc = 1
-            while True:
-                out_path = "outputs/{0}-{1}-{2}-{3}-{4}-{5}_".format(*out_path_fmt) + str(inc) + '.jpg'
-                if not osp.exists(out_path):
-                    break
-                else:
-                    inc = inc+1
 
     # DONE!
     imsave(out_path, img_as_ubyte(img_out))
